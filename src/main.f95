@@ -76,7 +76,7 @@ else
 endif
 
 ! convert distribution values to physical ones
-!res = distr2phys(res)
+res = distr2phys(res)
 
 
 ! open output file
