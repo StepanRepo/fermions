@@ -154,7 +154,8 @@ function gint_to_inf (f, a, step, n_in) result (res)
         x0 = 0.0_prec
         x1 = step
 
-        do while (abs(partial) > ZERO)
+
+        do while (abs(partial) > ZERO .or. i < 2)
 
                 ! calculate one iteration of the integral
                 partial = gint (f, x0, x1, 5)
@@ -169,7 +170,12 @@ function gint_to_inf (f, a, step, n_in) result (res)
                 if (i > 1000) exit
         enddo
 
-        if (i > 10000) then
+
+        if (i < 3) then
+                write(*, *) "Integral conberges too fast"
+        endif
+
+        if (i > 1000) then
                 write(*, *) "Integral is not convergent after 10^3 iterations"
         endif
 

@@ -34,7 +34,12 @@ contains
 
                 ! set initial values
                 n = real(n_in, prec)
-                step = xi/10.0_prec
+                
+                if (xi < 1.0_prec) then
+                        step = 1.0_prec
+                else
+                        step = xi/10.0_prec
+                endif
 
                 
                 res = gint_to_inf(f, 0.0_prec, step, 5)
@@ -133,7 +138,7 @@ contains
 
 
 !-----------------------------
-! Distribution functions for hight temperature regime
+! Distribution functions for high temperature regime
 ! y -> 0+
 !-----------------------------
         
@@ -169,7 +174,7 @@ contains
 
                 res = Fermi(3, xi) + 3.0_prec * y * Fermi(2, xi) +&
                         2.5_prec*y*y * Fermi(1, xi) + .5_prec * y**3.0_prec * Fermi(0, xi)
-                res = res / (y**4)
+                res = res / (y**3)
 
                 res = res + exp(xi) / (exp(xi) + 1.0_prec) / 8.0_prec *&
                         (log(2.0_prec*y) + .25_prec) 
@@ -188,7 +193,7 @@ contains
 
                 res = Fermi(3, xi) + 3.0_prec * y * Fermi(2, xi) +&
                         1.5_prec*y*y * Fermi(1, xi) - .5_prec * y**3.0_prec * Fermi(0, xi)
-                res = res / (y**4)
+                res = res / (y**3)
 
                 res = res + exp(xi) / (exp(xi) + 1.0_prec) / 8.0_prec *&
                         (3.0_prec * log(2.0_prec*y) + 1.75_prec) 
@@ -213,8 +218,10 @@ contains
                 zf = sqrt(gf**2.0_prec - 1.0_prec)
 
                 res = zf**3.0_prec / 3.0_prec + &
-                        gint (f, 0.0_prec, xi)/y**2.0_prec
-                        
+                        gint (f, 0.0_prec, xi)
+
+                print*, gint(f, 0.0_prec, xi)
+
 
                 contains
 
@@ -228,7 +235,7 @@ contains
                         gm = gf - u/y
                         zm = sqrt(gm**2.0_prec - 1.0_prec)
 
-                        f =(gp*zp - gm*zm) / (exp(u) + 1.0_prec)
+                        f =(gp*zp - gm*zm) / (exp(u) + 1.0_prec)/y
                 end function f
 
         end function F_n_low_T 
@@ -251,7 +258,8 @@ contains
 
                 res = res + (zf*gf * (2.0_prec *zf*zf + 1.0_prec) - &
                         log(zf + sqrt(zf*zf + 1.0_prec)))/8.0_prec
-                        
+
+
 
                 contains
 
@@ -268,7 +276,6 @@ contains
                         f = u / (exp(u) + 1.0_prec) * &
                                 (2.0_prec * (gf*gf + u*u/y/y)/ (zp + zm) - zp - zm)
                 end function f
-
         end function F_rho_low_T 
 
 
@@ -325,10 +332,19 @@ contains
 
 
                 xi = phi - y
-                step = xi/10.0_prec
+
+                if (xi < 1.0_prec) then
+                        step = 1.0_prec
+                else
+                        step = xi/10.0_prec
+                endif
                 
-                res = gint_to_inf(f, 0.0_prec, step, 5)
-                res = res / y**3
+                if (y < 1.0_prec) then
+                        res = gint_to_inf(f, 0.0_prec, step, 5)
+                else
+                        res = gint_to_inf(g, 0.0_prec, step, 5)/ (y**3.0_prec)
+                endif
+
 
                 contains
 
@@ -336,8 +352,15 @@ contains
                         real(prec) :: x, f
 
                         f = sqrt(x* (2.0_prec*y + x)) * (x+y) /&
-                                (exp(x - xi) + 1.0_prec)
+                                (exp(x - xi) + 1.0_prec) / (y**3.0_prec)
                 end function f
+
+                function g (x)
+                        real(prec) :: x, g
+
+                        g = sqrt(x* (2.0_prec*y + x)) * (x+y) /&
+                                (exp(x - xi) + 1.0_prec) 
+                end function g
         end function F_n
 
         function F_rho (y, phi) result (res)
@@ -350,10 +373,18 @@ contains
 
 
                 xi = phi - y
-                step = xi/10.0_prec
+
+                if (xi < 1.0_prec) then
+                        step = 1.0_prec
+                else
+                        step = xi/10.0_prec
+                endif
                 
-                res = gint_to_inf(f, 0.0_prec, step, 5)
-                res = res / y**3
+                if (y < 1.0_prec) then
+                        res = gint_to_inf(f, 0.0_prec, step, 5)
+                else
+                        res = gint_to_inf(g, 0.0_prec, step, 5)/ (y**3.0_prec)
+                endif
 
                 contains
 
@@ -361,8 +392,15 @@ contains
                         real(prec) :: x, f
 
                         f = sqrt(x* (2.0_prec*y + x)) * ((x+y)**2.0_prec) /&
-                                (exp(x - xi) + 1.0_prec)
+                                (exp(x - xi) + 1.0_prec) / (y**3.0_prec)
                 end function f
+
+                function g (x)
+                        real(prec) :: x, g
+
+                        g = sqrt(x* (2.0_prec*y + x)) * ((x+y)**2.0_prec) /&
+                                (exp(x - xi) + 1.0_prec) 
+                end function g
         end function F_rho
 
 
@@ -376,10 +414,18 @@ contains
 
 
                 xi = phi - y
-                step = xi/10.0_prec
-                
-                res = gint_to_inf(f, 0.0_prec, step, 5)
-                res = res / y**3
+
+                if (xi < 1.0_prec) then
+                        step = 1.0_prec
+                else
+                        step = xi/10.0_prec
+                endif
+
+                if (y < 1.0_prec) then
+                        res = gint_to_inf(f, 0.0_prec, step, 5)
+                else
+                        res = gint_to_inf(g, 0.0_prec, step, 5)/ (y**3.0_prec)
+                endif
 
                 contains
 
@@ -387,8 +433,15 @@ contains
                         real(prec) :: x, f
 
                         f = (x* (2.0_prec*y + x))**1.5_prec /&
-                                (exp(x - xi) + 1.0_prec)
+                                (exp(x - xi) + 1.0_prec)/(y**3.0_prec)
                 end function f
+
+                function g (x)
+                        real(prec) :: x, g
+
+                        g = (x* (2.0_prec*y + x))**1.5_prec /&
+                                (exp(x - xi) + 1.0_prec)
+                end function g
         end function F_p
 
 

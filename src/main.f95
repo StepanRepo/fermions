@@ -18,8 +18,8 @@ call configure()
 write(*, "('Input values:')")
 
 write(*, *)""
-write(*, "('T_min         : ', f16.2, ' K')") Tmin
-write(*, "('T_max         : ', f16.2, ' K')") Tmax
+write(*, "('T_min         : ', es16.2, ' K')") Tmin
+write(*, "('T_max         : ', es16.2, ' K')") Tmax
 write(*, "('Discretization: ', i16)") discr
 write(*, *)""
 write(*, "('Chem. potent. : ', es16.8, ' erg/g')") mu
@@ -76,7 +76,7 @@ else
 endif
 
 ! convert distribution values to physical ones
-res = distr2phys(res)
+!res = distr2phys(res)
 
 
 ! open output file
