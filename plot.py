@@ -50,7 +50,7 @@ if __name__ == "__main__":
         ax[2].plot(T, p)
 
         ax[0].set_ylabel(r"$n$, cm$^{-3}$")
-        ax[1].set_ylabel(r"$\rho$, g$\cdot$cm$^{-3}$")
+        ax[1].set_ylabel(r"$\rho$, erg$\cdot$cm$^{-3}$")
         ax[2].set_ylabel(r"$p$, dyn$\cdot$cm$^{-2}$")
 
         ax[2].set_xlabel(r"T, K")
